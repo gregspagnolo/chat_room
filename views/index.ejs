@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Testing</title>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type ="text/javascript" src="/socket.io/socket.io.js"></script>
+
+	</head>
+<body>
+<script>
+$(document).ready(function() {
+	var socket =  io.connect();
+	while(!name) {
+		var name = prompt("What is your name?");
+	}
+	socket.emit('newUser', {userName: name});
+
+	socket.on('updateUserList', function(serverData){
+		$('#users_box').html('');
+		$(serverData).each(function(index) {
+			$('#users_box').append('<h3>' +serverData[index].name+'</h3>');
+		});
+	})
+
+	$('#form').submit(function(){
+		socket.emit('newMessage', { msg: ('<p>'+ name + ': ' + $('#newMessage').val()+'</p>') }); 
+		$('#newMessage').val('');
+		return false;
+	});
+
+	socket.on('updateMessageBoard', function(serverData) {
+		$('div.message_box').append(serverData.msg);
+	})
+	
+	
+	});
+
+</script>
+	<div class="message_box"></div>
+	<div id="users_box"></div>
+	<form id='form'>
+		<input type='text' id='newMessage'>
+		<input type='submit' value='submit'>
+	</form>
+
+
+</body>
+</html>
